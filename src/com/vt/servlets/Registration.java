@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.vt.utils.Encoder;
+
 public class Registration extends HttpServlet {
 
 	private static final long serialVersionUID = -5870330710990233204L;
@@ -92,6 +94,8 @@ public class Registration extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html");
+		
+		DBManager menager = new DBManager();
 
 		String login = request.getParameter("login");
 		String password = request.getParameter("password");
@@ -165,13 +169,15 @@ public class Registration extends HttpServlet {
 		}
 
 		out.write("<div style=\"margin-left: 50%; height: 100px;\"> ");
-		if (region != null) {
-			if (isError) {
-				out.write(errorText);
-			} else {
-				out.write("Registration successful");
-			}
+		
+		if (isError) {
+			out.write(errorText);
+		} else {
+			menager.addUserToBD(login, Encoder.md5EncriptionWithSult(password), fullName, region, gender, comment);
+			out.write(Menu.MENU);
+			out.write("Registration successful");
 		}
+		
 		out.write("</div>");
 		out.write("</div>");
 	}

@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.vt.utils.Encoder;
+
 public class Authorization extends HttpServlet {
 
 	private static final long serialVersionUID = 1200711808800119310L;
@@ -36,20 +38,21 @@ public class Authorization extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse resp) throws ServletException, IOException {
 		resp.setContentType("text/html");
-
+		DBManager menager = new DBManager();
 		String login = request.getParameter("login");
 		String password = request.getParameter("password");
 
 		PrintWriter out = resp.getWriter();
 
-		if (login != null) {
-			if ("admin".equals(login) && "123".equals(password)) {
-				out.write("Access granted");
-			} else {
-				out.write("Access denied");
-				doGet(request, resp);
-			}
+		String fullName = menager.getFullNameByLoginAndPassword(login, Encoder.md5EncriptionWithSult(password));
+		
+		if (fullName!=null) {
+			out.write("Access granted. Welcome "+ fullName);
+		} else {
+			out.write("Access denied");
+			doGet(request, resp);
 		}
+		
 	}
 
 }
